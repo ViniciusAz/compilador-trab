@@ -12,8 +12,8 @@ public class TS_entry
    private TS_entry tipo;
    private int nroElementos;
    private TS_entry tipoBase;
+   private TabSimb locais;
 
-   private TabSimb escopolocal;
 
    // construtor para arrays
    public TS_entry(String umId, TS_entry umTipo, ClasseID umaClasse) {
@@ -41,6 +41,14 @@ public class TS_entry
        return tipoBase;
    }
 
+  public void insereLocais(TabSimb a) {
+    if (locais == null ) locais = new TabSimb();
+    locais = a;
+  }
+
+  public TabSimb getLocal() {
+    return locais;
+  }
 
    public String toString() {
        StringBuilder aux = new StringBuilder("");

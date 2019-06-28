@@ -1,7 +1,6 @@
 
 %{
   import java.io.*;
-  import java.util.Stack;
 %}
 
 
@@ -22,57 +21,31 @@
 
 %%
 
-prog : { currClass = ClasseID.VarGlobal; } dList fList main ;
+prog : { currClass = ClasseID.VarGlobal; } dList main ;
 
 dList : decl dList | ;
 
-decl : tstruct id '{' { localTS.push(new TabSimb();) } CorpoStruct '}' { localTS.pop() } ';' {
-                                                                                TS_entry nodo = ts.pesquisa($2);
-                                                                                if (nodo != null) {
-                                                                                    yyerror("(sem) STRUCT >" + $2 + "< jah declarada");
-                                                                                } else {
-                                                                                    ts.insert(new TS_entry($2, (TS_entry)$1, currClass));
-                                                                                }
-                                                                            };
+decl : tstruct id '{' CorpoStruct '}' ';' {
+                                            TS_entry nodo = ts.pesquisa($2);
+                                            if (nodo != null) {
+                                              yyerror("(sem) STRUCT >" + $2 + "< jah declarada");
+                                            }
 
-fList : func fList | ;
-
-func : VOID ID '(' pList ')' '{' cmd '}'
-     | type ID '(' pList ')' '{' cmd RETURN exp '}'
-     | ;
-
-pList : param pList | ;
-
-param : type ID ',' {  TS_entry nodo = ts.pesquisa($2);
-    	                if (nodo != null)
-                            yyerror("(sem) parametro >" + $2 + "< jah declarada");
-                        else ts.insert(new TS_entry($2, $1)); }
-      | type ID {  TS_entry nodo = ts.pesquisa($2);
-    	                if (nodo != null)
-                            yyerror("(sem) parametro >" + $2 + "< jah declarada");
-                        else ts.insert(new TS_entry($2, $1)); }
+                                             else ts.insert(new TS_entry($2, (TS_entry)$1, currClass));
+                                           */
+                                          }
       ;
 
 CorpoStruct : CorpoStruct StructAtrib
             | StructAtrib
             ;
 
-StructAtrib : type {currentType = (TS_entry)$1;} Lid ';' {
-                                                            TabSimb auxTS = localTS.pop();
-
-                                                            TS_entry nodo = ts.pesquisa($2);
-                                                            TS_entry nodoLocal = auxTS.pesquisa($2);
-
-                                                            if (nodo != null || nodoLocal != null) {
-                                                                localTS.push(auxTS);
-                                                                yyerror("(sem) STRUCT >" + $2 + "< jah declarada");
-                                                            } else {
-                                                                auxTS.insert(new TS_entry($2, (TS_entry)$1, currClass));
-                                                                localTS.push(auxTS);
-                                                            }
-
-                                                            //else ts.insert(new TS_entry($2, (TS_entry)$1, currClass));
-                                                        };
+StructAtrib : type {currentType = (TS_entry)$1;} Lid ';' { /* TS_entry nodo = ts.pesquisa($2);
+                                                             if (nodo != null)
+                                                               yyerror("(sem) STRUCT >" + $2 + "< jah declarada");
+                                                           else ts.insert(new TS_entry($2, (TS_entry)$1, currClass));
+                                                         */
+                                                        }
 
 
 
@@ -149,8 +122,6 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
 
   private TabSimb ts;
 
-  private Stack<TabSimb> localTS;
-
 
   public static TS_entry Tp_INT =  new TS_entry("int", null, ClasseID.TipoBase);
   public static TS_entry Tp_DOUBLE = new TS_entry("double", null,  ClasseID.TipoBase);
@@ -194,7 +165,6 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
     lexer = new Yylex(r, this);
 
     ts = new TabSimb();
-    localTS = new Stack();
 
     //
     // não me parece que necessitem estar na TS
