@@ -1,0 +1,29 @@
+$TRACE_OFF
+
+int d;
+bool matricula;
+
+def struct DATA {
+    int dia, mes, ano;
+}
+
+def struct ALUNO {
+    int matricula;
+    struct DATA dnasc;
+    bool formado;
+}
+
+struct DATA dia;
+struct ALUNO alu1;
+
+void main() {
+   alu1.matricula = 1000;
+   alu1.dnasc.dia = dia.dia + 5;
+   alu1.formado = matricula;
+   matricula = alu1.formado;
+
+   alu1.dnasc.d = 5;
+   alu1.dnasc.dia = alu1.formado;
+
+
+}

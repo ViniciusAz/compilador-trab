@@ -1,5 +1,6 @@
 int i;
 int a;
+bool kk;
 
 decStruct aluno {
 	int a;
@@ -7,21 +8,21 @@ decStruct aluno {
 };
 
 decStruct carro {
-	bool ac;
+	bool ac, dh;
 };
 
 func void test0() {}
 
-func void test2(int p1, int p2) {}
+func int test2(int p1, int p2) { return 0; }
 
 func void test3() {
 	i = 10;
 }
 
 func void test4(int j, int p2, int p3, int p4) {
-	int x;
+	int x, xx;
 	int y;
-	int i;
+	bool i;
 }
 
 func int getA() { return a; }
@@ -32,7 +33,9 @@ void main() {
 	struct aluno a2;
 	a1.a = 4;
 	a2.a = 5;
-	tes2(1,2);
+	test4(test2(1,2), 2 , 3 , 4);
+	
+	
 }
 
 

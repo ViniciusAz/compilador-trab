@@ -1,0 +1,25 @@
+$TRACE_OFF
+
+int i, j;
+double x,y;
+bool b, ok;
+
+void foo(int x) {
+    double ok;
+    ok = x * 3;
+    b = ok > y;
+}
+
+double boo(int a, double b) {
+    foo(b);
+    return 2;
+}
+
+void main() {
+   b = boo(i,y) > 7;
+   x = foo(5);
+   foo(ok);
+   x = boo(x,y);
+   y = boo(10);
+   y = boo(1,2,3); 
+}

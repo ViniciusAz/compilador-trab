@@ -30,7 +30,7 @@ prog : { currClass = ClasseID.VarGlobal; } dList main ;
 
 dList : decl dList | ;
 
-decl : type  { currentType = (TS_entry)$1; } id ';'
+decl : type  { currentType = (TS_entry)$1; } Lid ';'
      | DECSTRUCT { currentType = Tp_DECSTRUCT; } id '{' { escopoLocal = new TabSimb(); } dListStruct '}' ';' { TS_entry nodo = ts.pesquisa($3);
                                                                                                             nodo.insereLocais(escopoLocal); }
 	 | FUNC type { currentType = (TS_entry)$2; } id '(' { escopoLocal = new TabSimb(); } lparam ')' 
@@ -42,7 +42,11 @@ decl : type  { currentType = (TS_entry)$1; } id ';'
                                                                                                             nodo.insereLocais(escopoLocal); escopoLocal.listar(); }
                                                                                                             
      ;
-     
+
+Lid : Lid  ',' id 
+    | id  
+    ;
+
 lparam  : lparam ',' param
 		| param
 		|
@@ -57,9 +61,13 @@ corpoF : corpoF listacmd
 	;
 
 
-dListStruct : dListStruct type { currentType = (TS_entry)$2; } idL ';'
-            | type { currentType = (TS_entry)$1; } idL ';'
+dListStruct : dListStruct type { currentType = (TS_entry)$2; } LidL ';'
+            | type { currentType = (TS_entry)$1; } LidL ';'
             ;
+
+LidL : LidL  ',' idL 
+     | idL  
+     ;
 
 idL : IDENT   { TS_entry nodo = escopoLocal.pesquisa($1);
                             if (nodo != null) {
@@ -71,7 +79,7 @@ idL : IDENT   { TS_entry nodo = escopoLocal.pesquisa($1);
 ;
 idP : IDENT   { TS_entry nodo = escopoLocal.pesquisa($1);
                             if (nodo != null) {
-                              yyerror("(sem) parametro >" + $1 + "< jah declarada");
+                              yyerror("(sem) parametro >" + $1 + "< jah declarado");
                 } else {
                   escopoLocal.insert(new TS_entry($1, currentType, ClasseID.NomeParam));
                 }
@@ -96,7 +104,7 @@ type : INT    { $$ = Tp_INT; }
 
 
 
-main :  VOID MAIN '(' ')' bloco ;
+main :  VOID MAIN '(' ')' { System.out.println("\n\nVerificador semantico simples\n"); } bloco ;
 
 bloco : '{' listacmd '}';
 
@@ -180,31 +188,43 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
                if (nodoLocal == null) {
                   yyerror("(sem) variavel local <" + $4 + "> nao declarada");
                   $$ = Tp_ERRO;
-               }
-               else $$ = nodoLocal.getTipo();
+               } else $$ = nodoLocal.getTipo();
           }
-   | IDENT '(' { TS_entry nodo = aux.pesquisa($1);
+   | IDENT '(' { TS_entry nodo = aux.pesquisa($1);	   
+                 System.out.println("Tam1 " );
 				 if(nodo == null) {
+                 System.out.println("Tam2 " );
+					 pilhaPosicao.push(0);
+					 pilhaEscopo.push(null);
                      yyerror("(sem) Funcao <" + $1 + "> nao declarada");
 					 $$ = Tp_ERRO;
-                 } else {
-					 pilhaEscopo.push(nodo.getLocais());
-					 pilhaPosicao.push(nodo.getLocais().contaParam());
-				 }
-			   } pexp ')' { pilhaEscopo.pop(); pilhaPosicao.pop(); }
-;
+                 } else /* achou funcao */ {
+					 if(nodo.getLocais() == null ) {
+						pilhaPosicao.push(0);
+						pilhaEscopo.push(null);
+					 } else /* tem locais */ {
+						 pilhaPosicao.push(nodo.getLocais().contaParam());
+						 pilhaEscopo.push(nodo.getLocais());
+					 }
+                 }
+			   } pexp ')' { if (pilhaPosicao.peek() != 0)
+								yyerror("(sem) numero de parametros diferente da chamada da função");
+							pilhaEscopo.pop(); pilhaPosicao.pop(); }
+	;
 
-pexp : pexp ',' exp { if ( pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$3 ) {
-						yyerror("(sem) tipo do parametro <" + $3 + "> errado");
-					  } else if ( pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getClasse() != ClasseID.NomeParam ) {
-						yyerror("(sem) parametro errado");
-					  } else { pilhaPosicao.push(pilhaPosicao.pop() - 1); }
-				   } 
-	 | exp { if (pilhaPosicao.peek() != 1) {
-				yyerror("(sem) numero errado de parametros");
-			 } else if (pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$1) {
-				yyerror("(sem) tipo do parametro <" + $1 + "> errado, esperado: <"+ (TS_entry)$1 +">");
-			 }
+pexp : pexp ',' exp { //System.out.println("ordem posicao: " + pilhaPosicao.peek() + " , id : " + pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getId() ); 
+					  if ( pilhaEscopo.peek() != null ) {	
+					    if ( pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$3 ) {
+							yyerror("(sem) tipo do parametro <" + $3 + "> errado");
+						} pilhaPosicao.push(pilhaPosicao.pop() - 1);
+					  } 
+				   }
+	 | exp { if (pilhaEscopo.peek() != null) {
+				//System.out.println("ordem posicao: " + pilhaPosicao.peek() + " , id : " + pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getId() ); 
+				 if (pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$1) {
+					yyerror("(sem) tipo do parametro <" + $1 + "> errado");
+				 } pilhaPosicao.push(pilhaPosicao.pop() - 1); 
+			  }
 		   }
 	 ;
 
@@ -286,7 +306,7 @@ yydebug = debug;
 public void listarTS() { ts.listar();}
 
 public static void main(String args[]) throws IOException {
-System.out.println("\n\nVerificador semantico simples\n");
+//System.out.println("\n\nVerificador semantico simples\n");
 
 
 Parser yyparser;

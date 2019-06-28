@@ -9,7 +9,7 @@
 
    5  $$2 :
 
-   6  decl : type $$2 id ';'
+   6  decl : type $$2 Lid ';'
 
    7  $$3 :
 
@@ -39,69 +39,77 @@
 
   20  decl : FUNC VOID $$10 id '(' $$11 lparam ')' '{' $$12 corpoF $$13 '}'
 
-  21  lparam : lparam ',' param
-  22         | param
-  23         |
+  21  Lid : Lid ',' id
+  22      | id
 
-  24  $$14 :
+  23  lparam : lparam ',' param
+  24         | param
+  25         |
 
-  25  param : type $$14 idP
+  26  $$14 :
 
-  26  corpoF : corpoF listacmd
-  27         | corpoF dListStruct
-  28         |
+  27  param : type $$14 idP
 
-  29  $$15 :
+  28  corpoF : corpoF listacmd
+  29         | corpoF dListStruct
+  30         |
 
-  30  dListStruct : dListStruct type $$15 idL ';'
+  31  $$15 :
 
-  31  $$16 :
+  32  dListStruct : dListStruct type $$15 LidL ';'
 
-  32  dListStruct : type $$16 idL ';'
+  33  $$16 :
 
-  33  idL : IDENT
+  34  dListStruct : type $$16 LidL ';'
 
-  34  idP : IDENT
+  35  LidL : LidL ',' idL
+  36       | idL
 
-  35  id : IDENT
+  37  idL : IDENT
 
-  36  type : INT
-  37       | DOUBLE
-  38       | BOOL
+  38  idP : IDENT
 
-  39  main : VOID MAIN '(' ')' bloco
+  39  id : IDENT
 
-  40  bloco : '{' listacmd '}'
+  40  type : INT
+  41       | DOUBLE
+  42       | BOOL
 
-  41  listacmd : listacmd cmd
-  42           |
+  43  $$17 :
 
-  43  cmd : exp ';'
-  44      | IF '(' exp ')' cmd
+  44  main : VOID MAIN '(' ')' $$17 bloco
 
-  45  exp : exp '+' exp
-  46      | exp '>' exp
-  47      | exp AND exp
-  48      | NUM
-  49      | '(' exp ')'
-  50      | IDENT
-  51      | exp '=' exp
-  52      | exp '[' exp ']'
+  45  bloco : '{' listacmd '}'
 
-  53  $$17 :
+  46  listacmd : listacmd cmd
+  47           |
 
-  54  exp : STRUCT IDENT $$17 IDENT
+  48  cmd : exp ';'
+  49      | IF '(' exp ')' cmd
 
-  55  $$18 :
+  50  exp : exp '+' exp
+  51      | exp '>' exp
+  52      | exp AND exp
+  53      | NUM
+  54      | '(' exp ')'
+  55      | IDENT
+  56      | exp '=' exp
+  57      | exp '[' exp ']'
 
-  56  exp : IDENT $$18 '.' IDENT
+  58  $$18 :
 
-  57  $$19 :
+  59  exp : STRUCT IDENT $$18 IDENT
 
-  58  exp : IDENT '(' $$19 pexp ')'
+  60  $$19 :
 
-  59  pexp : pexp ',' exp
-  60       | exp
+  61  exp : IDENT $$19 '.' IDENT
+
+  62  $$20 :
+
+  63  exp : IDENT '(' $$20 pexp ')'
+
+  64  pexp : pexp ',' exp
+  65       | exp
 
 state 0
 	$accept : . prog $end  (0)
@@ -136,21 +144,21 @@ state 2
 
 
 state 3
-	type : INT .  (36)
+	type : INT .  (40)
 
-	.  reduce 36
+	.  reduce 40
 
 
 state 4
-	type : DOUBLE .  (37)
+	type : DOUBLE .  (41)
 
-	.  reduce 37
+	.  reduce 41
 
 
 state 5
-	type : BOOL .  (38)
+	type : BOOL .  (42)
 
-	.  reduce 38
+	.  reduce 42
 
 
 state 6
@@ -176,7 +184,7 @@ state 7
 
 
 state 8
-	decl : type . $$2 id ';'  (6)
+	decl : type . $$2 Lid ';'  (6)
 	$$2 : .  (5)
 
 	.  reduce 5
@@ -237,18 +245,19 @@ state 13
 
 
 state 14
-	decl : type $$2 . id ';'  (6)
+	decl : type $$2 . Lid ';'  (6)
 
 	IDENT  shift 18
 	.  error
 
 	id  goto 22
+	Lid  goto 23
 
 
 state 15
-	main : VOID . MAIN '(' ')' bloco  (39)
+	main : VOID . MAIN '(' ')' $$17 bloco  (44)
 
-	MAIN  shift 23
+	MAIN  shift 24
 	.  error
 
 
@@ -265,15 +274,15 @@ state 17
 
 
 state 18
-	id : IDENT .  (35)
+	id : IDENT .  (39)
 
-	.  reduce 35
+	.  reduce 39
 
 
 state 19
 	decl : DECSTRUCT $$3 id . '{' $$4 dListStruct '}' ';'  (9)
 
-	'{'  shift 24
+	'{'  shift 25
 	.  error
 
 
@@ -283,7 +292,7 @@ state 20
 	IDENT  shift 18
 	.  error
 
-	id  goto 25
+	id  goto 26
 
 
 state 21
@@ -292,60 +301,77 @@ state 21
 	IDENT  shift 18
 	.  error
 
-	id  goto 26
+	id  goto 27
 
 
 state 22
-	decl : type $$2 id . ';'  (6)
+	Lid : id .  (22)
 
-	';'  shift 27
-	.  error
+	.  reduce 22
 
 
 state 23
-	main : VOID MAIN . '(' ')' bloco  (39)
+	decl : type $$2 Lid . ';'  (6)
+	Lid : Lid . ',' id  (21)
 
-	'('  shift 28
+	';'  shift 28
+	','  shift 29
 	.  error
 
 
 state 24
-	decl : DECSTRUCT $$3 id '{' . $$4 dListStruct '}' ';'  (9)
-	$$4 : .  (8)
-
-	.  reduce 8
-
-	$$4  goto 29
-
-
-state 25
-	decl : FUNC VOID $$10 id . '(' $$11 lparam ')' '{' $$12 corpoF $$13 '}'  (20)
+	main : VOID MAIN . '(' ')' $$17 bloco  (44)
 
 	'('  shift 30
 	.  error
 
 
-state 26
-	decl : FUNC type $$5 id . '(' $$6 lparam ')' '{' $$7 corpoF RETURN exp $$8 ';' $$9 '}'  (15)
+state 25
+	decl : DECSTRUCT $$3 id '{' . $$4 dListStruct '}' ';'  (9)
+	$$4 : .  (8)
 
-	'('  shift 31
+	.  reduce 8
+
+	$$4  goto 31
+
+
+state 26
+	decl : FUNC VOID $$10 id . '(' $$11 lparam ')' '{' $$12 corpoF $$13 '}'  (20)
+
+	'('  shift 32
 	.  error
 
 
 state 27
-	decl : type $$2 id ';' .  (6)
+	decl : FUNC type $$5 id . '(' $$6 lparam ')' '{' $$7 corpoF RETURN exp $$8 ';' $$9 '}'  (15)
+
+	'('  shift 33
+	.  error
+
+
+state 28
+	decl : type $$2 Lid ';' .  (6)
 
 	.  reduce 6
 
 
-state 28
-	main : VOID MAIN '(' . ')' bloco  (39)
+state 29
+	Lid : Lid ',' . id  (21)
 
-	')'  shift 32
+	IDENT  shift 18
+	.  error
+
+	id  goto 34
+
+
+state 30
+	main : VOID MAIN '(' . ')' $$17 bloco  (44)
+
+	')'  shift 35
 	.  error
 
 
-state 29
+state 31
 	decl : DECSTRUCT $$3 id '{' $$4 . dListStruct '}' ';'  (9)
 
 	INT  shift 3
@@ -353,932 +379,974 @@ state 29
 	BOOL  shift 5
 	.  error
 
-	type  goto 33
-	dListStruct  goto 34
+	type  goto 36
+	dListStruct  goto 37
 
 
-state 30
+state 32
 	decl : FUNC VOID $$10 id '(' . $$11 lparam ')' '{' $$12 corpoF $$13 '}'  (20)
 	$$11 : .  (17)
 
 	.  reduce 17
 
-	$$11  goto 35
+	$$11  goto 38
 
 
-state 31
+state 33
 	decl : FUNC type $$5 id '(' . $$6 lparam ')' '{' $$7 corpoF RETURN exp $$8 ';' $$9 '}'  (15)
 	$$6 : .  (11)
 
 	.  reduce 11
 
-	$$6  goto 36
-
-
-state 32
-	main : VOID MAIN '(' ')' . bloco  (39)
-
-	'{'  shift 37
-	.  error
-
-	bloco  goto 38
-
-
-state 33
-	dListStruct : type . $$16 idL ';'  (32)
-	$$16 : .  (31)
-
-	.  reduce 31
-
-	$$16  goto 39
+	$$6  goto 39
 
 
 state 34
-	decl : DECSTRUCT $$3 id '{' $$4 dListStruct . '}' ';'  (9)
-	dListStruct : dListStruct . type $$15 idL ';'  (30)
+	Lid : Lid ',' id .  (21)
 
-	INT  shift 3
-	DOUBLE  shift 4
-	BOOL  shift 5
-	'}'  shift 40
-	.  error
-
-	type  goto 41
+	.  reduce 21
 
 
 state 35
-	decl : FUNC VOID $$10 id '(' $$11 . lparam ')' '{' $$12 corpoF $$13 '}'  (20)
-	lparam : .  (23)
+	main : VOID MAIN '(' ')' . $$17 bloco  (44)
+	$$17 : .  (43)
 
-	INT  shift 3
-	DOUBLE  shift 4
-	BOOL  shift 5
-	')'  reduce 23
-	','  reduce 23
+	.  reduce 43
 
-	type  goto 42
-	lparam  goto 43
-	param  goto 44
+	$$17  goto 40
 
 
 state 36
-	decl : FUNC type $$5 id '(' $$6 . lparam ')' '{' $$7 corpoF RETURN exp $$8 ';' $$9 '}'  (15)
-	lparam : .  (23)
+	dListStruct : type . $$16 LidL ';'  (34)
+	$$16 : .  (33)
+
+	.  reduce 33
+
+	$$16  goto 41
+
+
+state 37
+	decl : DECSTRUCT $$3 id '{' $$4 dListStruct . '}' ';'  (9)
+	dListStruct : dListStruct . type $$15 LidL ';'  (32)
 
 	INT  shift 3
 	DOUBLE  shift 4
 	BOOL  shift 5
-	')'  reduce 23
-	','  reduce 23
+	'}'  shift 42
+	.  error
 
-	type  goto 42
-	lparam  goto 45
-	param  goto 44
-
-
-state 37
-	bloco : '{' . listacmd '}'  (40)
-	listacmd : .  (42)
-
-	.  reduce 42
-
-	listacmd  goto 46
+	type  goto 43
 
 
 state 38
-	main : VOID MAIN '(' ')' bloco .  (39)
+	decl : FUNC VOID $$10 id '(' $$11 . lparam ')' '{' $$12 corpoF $$13 '}'  (20)
+	lparam : .  (25)
 
-	.  reduce 39
+	INT  shift 3
+	DOUBLE  shift 4
+	BOOL  shift 5
+	')'  reduce 25
+	','  reduce 25
+
+	type  goto 44
+	lparam  goto 45
+	param  goto 46
 
 
 state 39
-	dListStruct : type $$16 . idL ';'  (32)
+	decl : FUNC type $$5 id '(' $$6 . lparam ')' '{' $$7 corpoF RETURN exp $$8 ';' $$9 '}'  (15)
+	lparam : .  (25)
 
-	IDENT  shift 47
-	.  error
+	INT  shift 3
+	DOUBLE  shift 4
+	BOOL  shift 5
+	')'  reduce 25
+	','  reduce 25
 
-	idL  goto 48
+	type  goto 44
+	lparam  goto 47
+	param  goto 46
 
 
 state 40
-	decl : DECSTRUCT $$3 id '{' $$4 dListStruct '}' . ';'  (9)
+	main : VOID MAIN '(' ')' $$17 . bloco  (44)
 
-	';'  shift 49
+	'{'  shift 48
 	.  error
+
+	bloco  goto 49
 
 
 state 41
-	dListStruct : dListStruct type . $$15 idL ';'  (30)
-	$$15 : .  (29)
+	dListStruct : type $$16 . LidL ';'  (34)
 
-	.  reduce 29
+	IDENT  shift 50
+	.  error
 
-	$$15  goto 50
+	LidL  goto 51
+	idL  goto 52
 
 
 state 42
-	param : type . $$14 idP  (25)
-	$$14 : .  (24)
+	decl : DECSTRUCT $$3 id '{' $$4 dListStruct '}' . ';'  (9)
 
-	.  reduce 24
-
-	$$14  goto 51
-
-
-state 43
-	decl : FUNC VOID $$10 id '(' $$11 lparam . ')' '{' $$12 corpoF $$13 '}'  (20)
-	lparam : lparam . ',' param  (21)
-
-	')'  shift 52
-	','  shift 53
+	';'  shift 53
 	.  error
 
 
-state 44
-	lparam : param .  (22)
+state 43
+	dListStruct : dListStruct type . $$15 LidL ';'  (32)
+	$$15 : .  (31)
 
-	.  reduce 22
+	.  reduce 31
+
+	$$15  goto 54
+
+
+state 44
+	param : type . $$14 idP  (27)
+	$$14 : .  (26)
+
+	.  reduce 26
+
+	$$14  goto 55
 
 
 state 45
-	decl : FUNC type $$5 id '(' $$6 lparam . ')' '{' $$7 corpoF RETURN exp $$8 ';' $$9 '}'  (15)
-	lparam : lparam . ',' param  (21)
+	decl : FUNC VOID $$10 id '(' $$11 lparam . ')' '{' $$12 corpoF $$13 '}'  (20)
+	lparam : lparam . ',' param  (23)
 
-	')'  shift 54
-	','  shift 53
+	')'  shift 56
+	','  shift 57
 	.  error
 
 
 state 46
-	bloco : '{' listacmd . '}'  (40)
-	listacmd : listacmd . cmd  (41)
+	lparam : param .  (24)
 
-	IDENT  shift 55
-	NUM  shift 56
-	IF  shift 57
-	STRUCT  shift 58
-	'}'  shift 59
-	'('  shift 60
-	.  error
-
-	exp  goto 61
-	cmd  goto 62
+	.  reduce 24
 
 
 state 47
-	idL : IDENT .  (33)
+	decl : FUNC type $$5 id '(' $$6 lparam . ')' '{' $$7 corpoF RETURN exp $$8 ';' $$9 '}'  (15)
+	lparam : lparam . ',' param  (23)
 
-	.  reduce 33
-
-
-state 48
-	dListStruct : type $$16 idL . ';'  (32)
-
-	';'  shift 63
+	')'  shift 58
+	','  shift 57
 	.  error
 
 
+state 48
+	bloco : '{' . listacmd '}'  (45)
+	listacmd : .  (47)
+
+	.  reduce 47
+
+	listacmd  goto 59
+
+
 state 49
+	main : VOID MAIN '(' ')' $$17 bloco .  (44)
+
+	.  reduce 44
+
+
+state 50
+	idL : IDENT .  (37)
+
+	.  reduce 37
+
+
+state 51
+	dListStruct : type $$16 LidL . ';'  (34)
+	LidL : LidL . ',' idL  (35)
+
+	';'  shift 60
+	','  shift 61
+	.  error
+
+
+state 52
+	LidL : idL .  (36)
+
+	.  reduce 36
+
+
+state 53
 	decl : DECSTRUCT $$3 id '{' $$4 dListStruct '}' ';' .  (9)
 
 	.  reduce 9
 
 
-state 50
-	dListStruct : dListStruct type $$15 . idL ';'  (30)
+state 54
+	dListStruct : dListStruct type $$15 . LidL ';'  (32)
 
-	IDENT  shift 47
+	IDENT  shift 50
 	.  error
 
-	idL  goto 64
+	LidL  goto 62
+	idL  goto 52
 
 
-state 51
-	param : type $$14 . idP  (25)
+state 55
+	param : type $$14 . idP  (27)
 
-	IDENT  shift 65
+	IDENT  shift 63
 	.  error
 
-	idP  goto 66
+	idP  goto 64
 
 
-state 52
+state 56
 	decl : FUNC VOID $$10 id '(' $$11 lparam ')' . '{' $$12 corpoF $$13 '}'  (20)
 
-	'{'  shift 67
+	'{'  shift 65
 	.  error
 
 
-state 53
-	lparam : lparam ',' . param  (21)
+state 57
+	lparam : lparam ',' . param  (23)
 
 	INT  shift 3
 	DOUBLE  shift 4
 	BOOL  shift 5
 	.  error
 
-	type  goto 42
-	param  goto 68
-
-
-state 54
-	decl : FUNC type $$5 id '(' $$6 lparam ')' . '{' $$7 corpoF RETURN exp $$8 ';' $$9 '}'  (15)
-
-	'{'  shift 69
-	.  error
-
-
-state 55
-	exp : IDENT .  (50)
-	exp : IDENT . $$18 '.' IDENT  (56)
-	exp : IDENT . '(' $$19 pexp ')'  (58)
-	$$18 : .  (55)
-
-	'('  shift 70
-	AND  reduce 50
-	'='  reduce 50
-	'>'  reduce 50
-	'+'  reduce 50
-	'['  reduce 50
-	';'  reduce 50
-	')'  reduce 50
-	','  reduce 50
-	']'  reduce 50
-	'.'  reduce 55
-
-	$$18  goto 71
-
-
-state 56
-	exp : NUM .  (48)
-
-	.  reduce 48
-
-
-state 57
-	cmd : IF . '(' exp ')' cmd  (44)
-
-	'('  shift 72
-	.  error
+	type  goto 44
+	param  goto 66
 
 
 state 58
-	exp : STRUCT . IDENT $$17 IDENT  (54)
+	decl : FUNC type $$5 id '(' $$6 lparam ')' . '{' $$7 corpoF RETURN exp $$8 ';' $$9 '}'  (15)
 
-	IDENT  shift 73
+	'{'  shift 67
 	.  error
 
 
 state 59
-	bloco : '{' listacmd '}' .  (40)
+	bloco : '{' listacmd . '}'  (45)
+	listacmd : listacmd . cmd  (46)
 
-	.  reduce 40
-
-
-state 60
-	exp : '(' . exp ')'  (49)
-
-	IDENT  shift 55
-	NUM  shift 56
-	STRUCT  shift 58
-	'('  shift 60
+	IDENT  shift 68
+	NUM  shift 69
+	IF  shift 70
+	STRUCT  shift 71
+	'}'  shift 72
+	'('  shift 73
 	.  error
 
 	exp  goto 74
+	cmd  goto 75
 
 
-state 61
-	cmd : exp . ';'  (43)
-	exp : exp . '+' exp  (45)
-	exp : exp . '>' exp  (46)
-	exp : exp . AND exp  (47)
-	exp : exp . '=' exp  (51)
-	exp : exp . '[' exp ']'  (52)
-
-	AND  shift 75
-	'='  shift 76
-	'>'  shift 77
-	'+'  shift 78
-	'['  shift 79
-	';'  shift 80
-	.  error
-
-
-state 62
-	listacmd : listacmd cmd .  (41)
-
-	.  reduce 41
-
-
-state 63
-	dListStruct : type $$16 idL ';' .  (32)
-
-	.  reduce 32
-
-
-state 64
-	dListStruct : dListStruct type $$15 idL . ';'  (30)
-
-	';'  shift 81
-	.  error
-
-
-state 65
-	idP : IDENT .  (34)
+state 60
+	dListStruct : type $$16 LidL ';' .  (34)
 
 	.  reduce 34
 
 
-state 66
-	param : type $$14 idP .  (25)
+state 61
+	LidL : LidL ',' . idL  (35)
 
-	.  reduce 25
+	IDENT  shift 50
+	.  error
+
+	idL  goto 76
 
 
-state 67
+state 62
+	dListStruct : dListStruct type $$15 LidL . ';'  (32)
+	LidL : LidL . ',' idL  (35)
+
+	';'  shift 77
+	','  shift 61
+	.  error
+
+
+state 63
+	idP : IDENT .  (38)
+
+	.  reduce 38
+
+
+state 64
+	param : type $$14 idP .  (27)
+
+	.  reduce 27
+
+
+state 65
 	decl : FUNC VOID $$10 id '(' $$11 lparam ')' '{' . $$12 corpoF $$13 '}'  (20)
 	$$12 : .  (18)
 
 	.  reduce 18
 
-	$$12  goto 82
+	$$12  goto 78
 
 
-state 68
-	lparam : lparam ',' param .  (21)
+state 66
+	lparam : lparam ',' param .  (23)
 
-	.  reduce 21
+	.  reduce 23
 
 
-state 69
+state 67
 	decl : FUNC type $$5 id '(' $$6 lparam ')' '{' . $$7 corpoF RETURN exp $$8 ';' $$9 '}'  (15)
 	$$7 : .  (12)
 
 	.  reduce 12
 
-	$$7  goto 83
+	$$7  goto 79
+
+
+state 68
+	exp : IDENT .  (55)
+	exp : IDENT . $$19 '.' IDENT  (61)
+	exp : IDENT . '(' $$20 pexp ')'  (63)
+	$$19 : .  (60)
+
+	'('  shift 80
+	AND  reduce 55
+	'='  reduce 55
+	'>'  reduce 55
+	'+'  reduce 55
+	'['  reduce 55
+	';'  reduce 55
+	')'  reduce 55
+	','  reduce 55
+	']'  reduce 55
+	'.'  reduce 60
+
+	$$19  goto 81
+
+
+state 69
+	exp : NUM .  (53)
+
+	.  reduce 53
 
 
 state 70
-	exp : IDENT '(' . $$19 pexp ')'  (58)
-	$$19 : .  (57)
+	cmd : IF . '(' exp ')' cmd  (49)
 
-	.  reduce 57
-
-	$$19  goto 84
+	'('  shift 82
+	.  error
 
 
 state 71
-	exp : IDENT $$18 . '.' IDENT  (56)
+	exp : STRUCT . IDENT $$18 IDENT  (59)
 
-	'.'  shift 85
+	IDENT  shift 83
 	.  error
 
 
 state 72
-	cmd : IF '(' . exp ')' cmd  (44)
+	bloco : '{' listacmd '}' .  (45)
 
-	IDENT  shift 55
-	NUM  shift 56
-	STRUCT  shift 58
-	'('  shift 60
-	.  error
-
-	exp  goto 86
+	.  reduce 45
 
 
 state 73
-	exp : STRUCT IDENT . $$17 IDENT  (54)
-	$$17 : .  (53)
+	exp : '(' . exp ')'  (54)
 
-	.  reduce 53
+	IDENT  shift 68
+	NUM  shift 69
+	STRUCT  shift 71
+	'('  shift 73
+	.  error
 
-	$$17  goto 87
+	exp  goto 84
 
 
 state 74
-	exp : exp . '+' exp  (45)
-	exp : exp . '>' exp  (46)
-	exp : exp . AND exp  (47)
-	exp : '(' exp . ')'  (49)
-	exp : exp . '=' exp  (51)
-	exp : exp . '[' exp ']'  (52)
+	cmd : exp . ';'  (48)
+	exp : exp . '+' exp  (50)
+	exp : exp . '>' exp  (51)
+	exp : exp . AND exp  (52)
+	exp : exp . '=' exp  (56)
+	exp : exp . '[' exp ']'  (57)
 
-	AND  shift 75
-	'='  shift 76
-	'>'  shift 77
-	'+'  shift 78
-	'['  shift 79
-	')'  shift 88
+	AND  shift 85
+	'='  shift 86
+	'>'  shift 87
+	'+'  shift 88
+	'['  shift 89
+	';'  shift 90
 	.  error
 
 
 state 75
-	exp : exp AND . exp  (47)
+	listacmd : listacmd cmd .  (46)
 
-	IDENT  shift 55
-	NUM  shift 56
-	STRUCT  shift 58
-	'('  shift 60
-	.  error
-
-	exp  goto 89
+	.  reduce 46
 
 
 state 76
-	exp : exp '=' . exp  (51)
+	LidL : LidL ',' idL .  (35)
 
-	IDENT  shift 55
-	NUM  shift 56
-	STRUCT  shift 58
-	'('  shift 60
-	.  error
-
-	exp  goto 90
+	.  reduce 35
 
 
 state 77
-	exp : exp '>' . exp  (46)
+	dListStruct : dListStruct type $$15 LidL ';' .  (32)
 
-	IDENT  shift 55
-	NUM  shift 56
-	STRUCT  shift 58
-	'('  shift 60
-	.  error
-
-	exp  goto 91
+	.  reduce 32
 
 
 state 78
-	exp : exp '+' . exp  (45)
-
-	IDENT  shift 55
-	NUM  shift 56
-	STRUCT  shift 58
-	'('  shift 60
-	.  error
-
-	exp  goto 92
-
-
-state 79
-	exp : exp '[' . exp ']'  (52)
-
-	IDENT  shift 55
-	NUM  shift 56
-	STRUCT  shift 58
-	'('  shift 60
-	.  error
-
-	exp  goto 93
-
-
-state 80
-	cmd : exp ';' .  (43)
-
-	.  reduce 43
-
-
-state 81
-	dListStruct : dListStruct type $$15 idL ';' .  (30)
+	decl : FUNC VOID $$10 id '(' $$11 lparam ')' '{' $$12 . corpoF $$13 '}'  (20)
+	corpoF : .  (30)
 
 	.  reduce 30
 
+	corpoF  goto 91
+
+
+state 79
+	decl : FUNC type $$5 id '(' $$6 lparam ')' '{' $$7 . corpoF RETURN exp $$8 ';' $$9 '}'  (15)
+	corpoF : .  (30)
+
+	.  reduce 30
+
+	corpoF  goto 92
+
+
+state 80
+	exp : IDENT '(' . $$20 pexp ')'  (63)
+	$$20 : .  (62)
+
+	.  reduce 62
+
+	$$20  goto 93
+
+
+state 81
+	exp : IDENT $$19 . '.' IDENT  (61)
+
+	'.'  shift 94
+	.  error
+
 
 state 82
-	decl : FUNC VOID $$10 id '(' $$11 lparam ')' '{' $$12 . corpoF $$13 '}'  (20)
-	corpoF : .  (28)
+	cmd : IF '(' . exp ')' cmd  (49)
 
-	.  reduce 28
+	IDENT  shift 68
+	NUM  shift 69
+	STRUCT  shift 71
+	'('  shift 73
+	.  error
 
-	corpoF  goto 94
+	exp  goto 95
 
 
 state 83
-	decl : FUNC type $$5 id '(' $$6 lparam ')' '{' $$7 . corpoF RETURN exp $$8 ';' $$9 '}'  (15)
-	corpoF : .  (28)
+	exp : STRUCT IDENT . $$18 IDENT  (59)
+	$$18 : .  (58)
 
-	.  reduce 28
+	.  reduce 58
 
-	corpoF  goto 95
+	$$18  goto 96
 
 
 state 84
-	exp : IDENT '(' $$19 . pexp ')'  (58)
+	exp : exp . '+' exp  (50)
+	exp : exp . '>' exp  (51)
+	exp : exp . AND exp  (52)
+	exp : '(' exp . ')'  (54)
+	exp : exp . '=' exp  (56)
+	exp : exp . '[' exp ']'  (57)
 
-	IDENT  shift 55
-	NUM  shift 56
-	STRUCT  shift 58
-	'('  shift 60
+	AND  shift 85
+	'='  shift 86
+	'>'  shift 87
+	'+'  shift 88
+	'['  shift 89
+	')'  shift 97
 	.  error
-
-	exp  goto 96
-	pexp  goto 97
 
 
 state 85
-	exp : IDENT $$18 '.' . IDENT  (56)
+	exp : exp AND . exp  (52)
 
-	IDENT  shift 98
+	IDENT  shift 68
+	NUM  shift 69
+	STRUCT  shift 71
+	'('  shift 73
 	.  error
+
+	exp  goto 98
 
 
 state 86
-	cmd : IF '(' exp . ')' cmd  (44)
-	exp : exp . '+' exp  (45)
-	exp : exp . '>' exp  (46)
-	exp : exp . AND exp  (47)
-	exp : exp . '=' exp  (51)
-	exp : exp . '[' exp ']'  (52)
+	exp : exp '=' . exp  (56)
 
-	AND  shift 75
-	'='  shift 76
-	'>'  shift 77
-	'+'  shift 78
-	'['  shift 79
-	')'  shift 99
+	IDENT  shift 68
+	NUM  shift 69
+	STRUCT  shift 71
+	'('  shift 73
 	.  error
+
+	exp  goto 99
 
 
 state 87
-	exp : STRUCT IDENT $$17 . IDENT  (54)
+	exp : exp '>' . exp  (51)
 
-	IDENT  shift 100
+	IDENT  shift 68
+	NUM  shift 69
+	STRUCT  shift 71
+	'('  shift 73
 	.  error
+
+	exp  goto 100
 
 
 state 88
-	exp : '(' exp ')' .  (49)
+	exp : exp '+' . exp  (50)
 
-	.  reduce 49
+	IDENT  shift 68
+	NUM  shift 69
+	STRUCT  shift 71
+	'('  shift 73
+	.  error
+
+	exp  goto 101
 
 
 state 89
-	exp : exp . '+' exp  (45)
-	exp : exp . '>' exp  (46)
-	exp : exp . AND exp  (47)
-	exp : exp AND exp .  (47)
-	exp : exp . '=' exp  (51)
-	exp : exp . '[' exp ']'  (52)
+	exp : exp '[' . exp ']'  (57)
 
-	'['  shift 79
-	AND  reduce 47
-	'='  reduce 47
-	'>'  reduce 47
-	'+'  reduce 47
-	';'  reduce 47
-	')'  reduce 47
-	','  reduce 47
-	']'  reduce 47
+	IDENT  shift 68
+	NUM  shift 69
+	STRUCT  shift 71
+	'('  shift 73
+	.  error
+
+	exp  goto 102
 
 
 state 90
-	exp : exp . '+' exp  (45)
-	exp : exp . '>' exp  (46)
-	exp : exp . AND exp  (47)
-	exp : exp . '=' exp  (51)
-	exp : exp '=' exp .  (51)
-	exp : exp . '[' exp ']'  (52)
+	cmd : exp ';' .  (48)
 
-	AND  shift 75
-	'='  shift 76
-	'>'  shift 77
-	'+'  shift 78
-	'['  shift 79
+	.  reduce 48
+
+
+91: shift/reduce conflict (shift 3, reduce 47) on INT
+91: shift/reduce conflict (shift 4, reduce 47) on DOUBLE
+91: shift/reduce conflict (shift 5, reduce 47) on BOOL
+91: reduce/reduce conflict (reduce 19, reduce 47) on '}'
+state 91
+	decl : FUNC VOID $$10 id '(' $$11 lparam ')' '{' $$12 corpoF . $$13 '}'  (20)
+	corpoF : corpoF . listacmd  (28)
+	corpoF : corpoF . dListStruct  (29)
+	$$13 : .  (19)
+	listacmd : .  (47)
+
+	INT  shift 3
+	DOUBLE  shift 4
+	BOOL  shift 5
+	IDENT  reduce 47
+	NUM  reduce 47
+	IF  reduce 47
+	STRUCT  reduce 47
+	'}'  reduce 19
+	'('  reduce 47
+
+	type  goto 36
+	dListStruct  goto 103
+	$$13  goto 104
+	listacmd  goto 105
+
+
+92: shift/reduce conflict (shift 3, reduce 47) on INT
+92: shift/reduce conflict (shift 4, reduce 47) on DOUBLE
+92: shift/reduce conflict (shift 5, reduce 47) on BOOL
+92: shift/reduce conflict (shift 106, reduce 47) on RETURN
+state 92
+	decl : FUNC type $$5 id '(' $$6 lparam ')' '{' $$7 corpoF . RETURN exp $$8 ';' $$9 '}'  (15)
+	corpoF : corpoF . listacmd  (28)
+	corpoF : corpoF . dListStruct  (29)
+	listacmd : .  (47)
+
+	INT  shift 3
+	DOUBLE  shift 4
+	BOOL  shift 5
+	RETURN  shift 106
+	IDENT  reduce 47
+	NUM  reduce 47
+	IF  reduce 47
+	STRUCT  reduce 47
+	'('  reduce 47
+
+	type  goto 36
+	dListStruct  goto 103
+	listacmd  goto 105
+
+
+state 93
+	exp : IDENT '(' $$20 . pexp ')'  (63)
+
+	IDENT  shift 68
+	NUM  shift 69
+	STRUCT  shift 71
+	'('  shift 73
+	.  error
+
+	exp  goto 107
+	pexp  goto 108
+
+
+state 94
+	exp : IDENT $$19 '.' . IDENT  (61)
+
+	IDENT  shift 109
+	.  error
+
+
+state 95
+	cmd : IF '(' exp . ')' cmd  (49)
+	exp : exp . '+' exp  (50)
+	exp : exp . '>' exp  (51)
+	exp : exp . AND exp  (52)
+	exp : exp . '=' exp  (56)
+	exp : exp . '[' exp ']'  (57)
+
+	AND  shift 85
+	'='  shift 86
+	'>'  shift 87
+	'+'  shift 88
+	'['  shift 89
+	')'  shift 110
+	.  error
+
+
+state 96
+	exp : STRUCT IDENT $$18 . IDENT  (59)
+
+	IDENT  shift 111
+	.  error
+
+
+state 97
+	exp : '(' exp ')' .  (54)
+
+	.  reduce 54
+
+
+state 98
+	exp : exp . '+' exp  (50)
+	exp : exp . '>' exp  (51)
+	exp : exp . AND exp  (52)
+	exp : exp AND exp .  (52)
+	exp : exp . '=' exp  (56)
+	exp : exp . '[' exp ']'  (57)
+
+	'['  shift 89
+	AND  reduce 52
+	'='  reduce 52
+	'>'  reduce 52
+	'+'  reduce 52
+	';'  reduce 52
+	')'  reduce 52
+	','  reduce 52
+	']'  reduce 52
+
+
+state 99
+	exp : exp . '+' exp  (50)
+	exp : exp . '>' exp  (51)
+	exp : exp . AND exp  (52)
+	exp : exp . '=' exp  (56)
+	exp : exp '=' exp .  (56)
+	exp : exp . '[' exp ']'  (57)
+
+	AND  shift 85
+	'='  shift 86
+	'>'  shift 87
+	'+'  shift 88
+	'['  shift 89
+	';'  reduce 56
+	')'  reduce 56
+	','  reduce 56
+	']'  reduce 56
+
+
+state 100
+	exp : exp . '+' exp  (50)
+	exp : exp . '>' exp  (51)
+	exp : exp '>' exp .  (51)
+	exp : exp . AND exp  (52)
+	exp : exp . '=' exp  (56)
+	exp : exp . '[' exp ']'  (57)
+
+	AND  shift 85
+	'+'  shift 88
+	'['  shift 89
+	'='  reduce 51
 	';'  reduce 51
 	')'  reduce 51
 	','  reduce 51
 	']'  reduce 51
 
 
-state 91
-	exp : exp . '+' exp  (45)
-	exp : exp . '>' exp  (46)
-	exp : exp '>' exp .  (46)
-	exp : exp . AND exp  (47)
-	exp : exp . '=' exp  (51)
-	exp : exp . '[' exp ']'  (52)
-
-	AND  shift 75
-	'+'  shift 78
-	'['  shift 79
-	'='  reduce 46
-	';'  reduce 46
-	')'  reduce 46
-	','  reduce 46
-	']'  reduce 46
-
-
-state 92
-	exp : exp . '+' exp  (45)
-	exp : exp '+' exp .  (45)
-	exp : exp . '>' exp  (46)
-	exp : exp . AND exp  (47)
-	exp : exp . '=' exp  (51)
-	exp : exp . '[' exp ']'  (52)
-
-	AND  shift 75
-	'['  shift 79
-	'='  reduce 45
-	'>'  reduce 45
-	'+'  reduce 45
-	';'  reduce 45
-	')'  reduce 45
-	','  reduce 45
-	']'  reduce 45
-
-
-state 93
-	exp : exp . '+' exp  (45)
-	exp : exp . '>' exp  (46)
-	exp : exp . AND exp  (47)
-	exp : exp . '=' exp  (51)
-	exp : exp . '[' exp ']'  (52)
-	exp : exp '[' exp . ']'  (52)
-
-	AND  shift 75
-	'='  shift 76
-	'>'  shift 77
-	'+'  shift 78
-	'['  shift 79
-	']'  shift 101
-	.  error
-
-
-94: shift/reduce conflict (shift 3, reduce 42) on INT
-94: shift/reduce conflict (shift 4, reduce 42) on DOUBLE
-94: shift/reduce conflict (shift 5, reduce 42) on BOOL
-94: reduce/reduce conflict (reduce 19, reduce 42) on '}'
-state 94
-	decl : FUNC VOID $$10 id '(' $$11 lparam ')' '{' $$12 corpoF . $$13 '}'  (20)
-	corpoF : corpoF . listacmd  (26)
-	corpoF : corpoF . dListStruct  (27)
-	$$13 : .  (19)
-	listacmd : .  (42)
-
-	INT  shift 3
-	DOUBLE  shift 4
-	BOOL  shift 5
-	IDENT  reduce 42
-	NUM  reduce 42
-	IF  reduce 42
-	STRUCT  reduce 42
-	'}'  reduce 19
-	'('  reduce 42
-
-	type  goto 33
-	dListStruct  goto 102
-	$$13  goto 103
-	listacmd  goto 104
-
-
-95: shift/reduce conflict (shift 3, reduce 42) on INT
-95: shift/reduce conflict (shift 4, reduce 42) on DOUBLE
-95: shift/reduce conflict (shift 5, reduce 42) on BOOL
-95: shift/reduce conflict (shift 105, reduce 42) on RETURN
-state 95
-	decl : FUNC type $$5 id '(' $$6 lparam ')' '{' $$7 corpoF . RETURN exp $$8 ';' $$9 '}'  (15)
-	corpoF : corpoF . listacmd  (26)
-	corpoF : corpoF . dListStruct  (27)
-	listacmd : .  (42)
-
-	INT  shift 3
-	DOUBLE  shift 4
-	BOOL  shift 5
-	RETURN  shift 105
-	IDENT  reduce 42
-	NUM  reduce 42
-	IF  reduce 42
-	STRUCT  reduce 42
-	'('  reduce 42
-
-	type  goto 33
-	dListStruct  goto 102
-	listacmd  goto 104
-
-
-state 96
-	exp : exp . '+' exp  (45)
-	exp : exp . '>' exp  (46)
-	exp : exp . AND exp  (47)
-	exp : exp . '=' exp  (51)
-	exp : exp . '[' exp ']'  (52)
-	pexp : exp .  (60)
-
-	AND  shift 75
-	'='  shift 76
-	'>'  shift 77
-	'+'  shift 78
-	'['  shift 79
-	')'  reduce 60
-	','  reduce 60
-
-
-state 97
-	exp : IDENT '(' $$19 pexp . ')'  (58)
-	pexp : pexp . ',' exp  (59)
-
-	')'  shift 106
-	','  shift 107
-	.  error
-
-
-state 98
-	exp : IDENT $$18 '.' IDENT .  (56)
-
-	.  reduce 56
-
-
-state 99
-	cmd : IF '(' exp ')' . cmd  (44)
-
-	IDENT  shift 55
-	NUM  shift 56
-	IF  shift 57
-	STRUCT  shift 58
-	'('  shift 60
-	.  error
-
-	exp  goto 61
-	cmd  goto 108
-
-
-state 100
-	exp : STRUCT IDENT $$17 IDENT .  (54)
-
-	.  reduce 54
-
-
 state 101
-	exp : exp '[' exp ']' .  (52)
+	exp : exp . '+' exp  (50)
+	exp : exp '+' exp .  (50)
+	exp : exp . '>' exp  (51)
+	exp : exp . AND exp  (52)
+	exp : exp . '=' exp  (56)
+	exp : exp . '[' exp ']'  (57)
 
-	.  reduce 52
+	AND  shift 85
+	'['  shift 89
+	'='  reduce 50
+	'>'  reduce 50
+	'+'  reduce 50
+	';'  reduce 50
+	')'  reduce 50
+	','  reduce 50
+	']'  reduce 50
 
 
-102: shift/reduce conflict (shift 3, reduce 27) on INT
-102: shift/reduce conflict (shift 4, reduce 27) on DOUBLE
-102: shift/reduce conflict (shift 5, reduce 27) on BOOL
 state 102
-	corpoF : corpoF dListStruct .  (27)
-	dListStruct : dListStruct . type $$15 idL ';'  (30)
+	exp : exp . '+' exp  (50)
+	exp : exp . '>' exp  (51)
+	exp : exp . AND exp  (52)
+	exp : exp . '=' exp  (56)
+	exp : exp . '[' exp ']'  (57)
+	exp : exp '[' exp . ']'  (57)
+
+	AND  shift 85
+	'='  shift 86
+	'>'  shift 87
+	'+'  shift 88
+	'['  shift 89
+	']'  shift 112
+	.  error
+
+
+103: shift/reduce conflict (shift 3, reduce 29) on INT
+103: shift/reduce conflict (shift 4, reduce 29) on DOUBLE
+103: shift/reduce conflict (shift 5, reduce 29) on BOOL
+state 103
+	corpoF : corpoF dListStruct .  (29)
+	dListStruct : dListStruct . type $$15 LidL ';'  (32)
 
 	INT  shift 3
 	DOUBLE  shift 4
 	BOOL  shift 5
-	IDENT  reduce 27
-	NUM  reduce 27
-	IF  reduce 27
-	STRUCT  reduce 27
-	RETURN  reduce 27
-	'}'  reduce 27
-	'('  reduce 27
+	IDENT  reduce 29
+	NUM  reduce 29
+	IF  reduce 29
+	STRUCT  reduce 29
+	RETURN  reduce 29
+	'}'  reduce 29
+	'('  reduce 29
 
-	type  goto 41
+	type  goto 43
 
 
-state 103
+state 104
 	decl : FUNC VOID $$10 id '(' $$11 lparam ')' '{' $$12 corpoF $$13 . '}'  (20)
 
-	'}'  shift 109
+	'}'  shift 113
 	.  error
 
 
-104: shift/reduce conflict (shift 55, reduce 26) on IDENT
-104: shift/reduce conflict (shift 56, reduce 26) on NUM
-104: shift/reduce conflict (shift 57, reduce 26) on IF
-104: shift/reduce conflict (shift 58, reduce 26) on STRUCT
-104: shift/reduce conflict (shift 60, reduce 26) on '('
-state 104
-	corpoF : corpoF listacmd .  (26)
-	listacmd : listacmd . cmd  (41)
-
-	IDENT  shift 55
-	NUM  shift 56
-	IF  shift 57
-	STRUCT  shift 58
-	'('  shift 60
-	INT  reduce 26
-	DOUBLE  reduce 26
-	BOOL  reduce 26
-	RETURN  reduce 26
-	'}'  reduce 26
-
-	exp  goto 61
-	cmd  goto 62
-
-
+105: shift/reduce conflict (shift 68, reduce 28) on IDENT
+105: shift/reduce conflict (shift 69, reduce 28) on NUM
+105: shift/reduce conflict (shift 70, reduce 28) on IF
+105: shift/reduce conflict (shift 71, reduce 28) on STRUCT
+105: shift/reduce conflict (shift 73, reduce 28) on '('
 state 105
-	decl : FUNC type $$5 id '(' $$6 lparam ')' '{' $$7 corpoF RETURN . exp $$8 ';' $$9 '}'  (15)
+	corpoF : corpoF listacmd .  (28)
+	listacmd : listacmd . cmd  (46)
 
-	IDENT  shift 55
-	NUM  shift 56
-	STRUCT  shift 58
-	'('  shift 60
-	.  error
+	IDENT  shift 68
+	NUM  shift 69
+	IF  shift 70
+	STRUCT  shift 71
+	'('  shift 73
+	INT  reduce 28
+	DOUBLE  reduce 28
+	BOOL  reduce 28
+	RETURN  reduce 28
+	'}'  reduce 28
 
-	exp  goto 110
+	exp  goto 74
+	cmd  goto 75
 
 
 state 106
-	exp : IDENT '(' $$19 pexp ')' .  (58)
+	decl : FUNC type $$5 id '(' $$6 lparam ')' '{' $$7 corpoF RETURN . exp $$8 ';' $$9 '}'  (15)
 
-	.  reduce 58
+	IDENT  shift 68
+	NUM  shift 69
+	STRUCT  shift 71
+	'('  shift 73
+	.  error
+
+	exp  goto 114
 
 
 state 107
-	pexp : pexp ',' . exp  (59)
+	exp : exp . '+' exp  (50)
+	exp : exp . '>' exp  (51)
+	exp : exp . AND exp  (52)
+	exp : exp . '=' exp  (56)
+	exp : exp . '[' exp ']'  (57)
+	pexp : exp .  (65)
 
-	IDENT  shift 55
-	NUM  shift 56
-	STRUCT  shift 58
-	'('  shift 60
-	.  error
-
-	exp  goto 111
+	AND  shift 85
+	'='  shift 86
+	'>'  shift 87
+	'+'  shift 88
+	'['  shift 89
+	')'  reduce 65
+	','  reduce 65
 
 
 state 108
-	cmd : IF '(' exp ')' cmd .  (44)
+	exp : IDENT '(' $$20 pexp . ')'  (63)
+	pexp : pexp . ',' exp  (64)
 
-	.  reduce 44
+	')'  shift 115
+	','  shift 116
+	.  error
 
 
 state 109
+	exp : IDENT $$19 '.' IDENT .  (61)
+
+	.  reduce 61
+
+
+state 110
+	cmd : IF '(' exp ')' . cmd  (49)
+
+	IDENT  shift 68
+	NUM  shift 69
+	IF  shift 70
+	STRUCT  shift 71
+	'('  shift 73
+	.  error
+
+	exp  goto 74
+	cmd  goto 117
+
+
+state 111
+	exp : STRUCT IDENT $$18 IDENT .  (59)
+
+	.  reduce 59
+
+
+state 112
+	exp : exp '[' exp ']' .  (57)
+
+	.  reduce 57
+
+
+state 113
 	decl : FUNC VOID $$10 id '(' $$11 lparam ')' '{' $$12 corpoF $$13 '}' .  (20)
 
 	.  reduce 20
 
 
-state 110
+state 114
 	decl : FUNC type $$5 id '(' $$6 lparam ')' '{' $$7 corpoF RETURN exp . $$8 ';' $$9 '}'  (15)
-	exp : exp . '+' exp  (45)
-	exp : exp . '>' exp  (46)
-	exp : exp . AND exp  (47)
-	exp : exp . '=' exp  (51)
-	exp : exp . '[' exp ']'  (52)
+	exp : exp . '+' exp  (50)
+	exp : exp . '>' exp  (51)
+	exp : exp . AND exp  (52)
+	exp : exp . '=' exp  (56)
+	exp : exp . '[' exp ']'  (57)
 	$$8 : .  (13)
 
-	AND  shift 75
-	'='  shift 76
-	'>'  shift 77
-	'+'  shift 78
-	'['  shift 79
+	AND  shift 85
+	'='  shift 86
+	'>'  shift 87
+	'+'  shift 88
+	'['  shift 89
 	';'  reduce 13
 
-	$$8  goto 112
+	$$8  goto 118
 
 
-state 111
-	exp : exp . '+' exp  (45)
-	exp : exp . '>' exp  (46)
-	exp : exp . AND exp  (47)
-	exp : exp . '=' exp  (51)
-	exp : exp . '[' exp ']'  (52)
-	pexp : pexp ',' exp .  (59)
+state 115
+	exp : IDENT '(' $$20 pexp ')' .  (63)
 
-	AND  shift 75
-	'='  shift 76
-	'>'  shift 77
-	'+'  shift 78
-	'['  shift 79
-	')'  reduce 59
-	','  reduce 59
+	.  reduce 63
 
 
-state 112
+state 116
+	pexp : pexp ',' . exp  (64)
+
+	IDENT  shift 68
+	NUM  shift 69
+	STRUCT  shift 71
+	'('  shift 73
+	.  error
+
+	exp  goto 119
+
+
+state 117
+	cmd : IF '(' exp ')' cmd .  (49)
+
+	.  reduce 49
+
+
+state 118
 	decl : FUNC type $$5 id '(' $$6 lparam ')' '{' $$7 corpoF RETURN exp $$8 . ';' $$9 '}'  (15)
 
-	';'  shift 113
+	';'  shift 120
 	.  error
 
 
-state 113
+state 119
+	exp : exp . '+' exp  (50)
+	exp : exp . '>' exp  (51)
+	exp : exp . AND exp  (52)
+	exp : exp . '=' exp  (56)
+	exp : exp . '[' exp ']'  (57)
+	pexp : pexp ',' exp .  (64)
+
+	AND  shift 85
+	'='  shift 86
+	'>'  shift 87
+	'+'  shift 88
+	'['  shift 89
+	')'  reduce 64
+	','  reduce 64
+
+
+state 120
 	decl : FUNC type $$5 id '(' $$6 lparam ')' '{' $$7 corpoF RETURN exp $$8 ';' . $$9 '}'  (15)
 	$$9 : .  (14)
 
 	.  reduce 14
 
-	$$9  goto 114
+	$$9  goto 121
 
 
-state 114
+state 121
 	decl : FUNC type $$5 id '(' $$6 lparam ')' '{' $$7 corpoF RETURN exp $$8 ';' $$9 . '}'  (15)
 
-	'}'  shift 115
+	'}'  shift 122
 	.  error
 
 
-state 115
+state 122
 	decl : FUNC type $$5 id '(' $$6 lparam ')' '{' $$7 corpoF RETURN exp $$8 ';' $$9 '}' .  (15)
 
 	.  reduce 15
 
 
-State 94 contains 3 shift/reduce conflicts, 1 reduce/reduce conflict.
-State 95 contains 4 shift/reduce conflicts.
-State 102 contains 3 shift/reduce conflicts.
-State 104 contains 5 shift/reduce conflicts.
+State 91 contains 3 shift/reduce conflicts, 1 reduce/reduce conflict.
+State 92 contains 4 shift/reduce conflicts.
+State 103 contains 3 shift/reduce conflicts.
+State 105 contains 5 shift/reduce conflicts.
 
 
-29 terminals, 37 nonterminals
-61 grammar rules, 116 states
+29 terminals, 40 nonterminals
+66 grammar rules, 123 states
