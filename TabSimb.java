@@ -22,6 +22,15 @@ public class TabSimb
           System.out.println(nodo);
       }
     }
+    
+    public int contaParam() {
+      int cont = 0;
+      System.out.println("\n\nListagem da tabela de simbolos:\n");
+      for (TS_entry nodo : lista) {
+          if(nodo.getClasse() == ClasseID.NomeParam) cont++;
+      }
+      return cont;
+    }
       
     public TS_entry pesquisa(String umId) {
       for (TS_entry nodo : lista) {
@@ -31,6 +40,10 @@ public class TabSimb
       }
       return null;
     }
+    
+    public TS_entry get(Integer n) {
+		return lista.get(n);
+	}
 
     public  ArrayList<TS_entry> getLista() {return lista;}
 }

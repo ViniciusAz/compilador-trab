@@ -1,23 +1,39 @@
-int i, j, k;
-double x,  y;
-bool b, ok;
+int i;
+int a;
 
-int [10] v;
-bool [5][10] vb;
-double  [5][6][7][8][9] cinema7d;
+decStruct aluno {
+	int a;
+	int b;
+};
 
-void main() {
-   ok = vb[v[i+j]][3] && b && (x > i) && (i > 3);
+decStruct carro {
+	bool ac;
+};
 
-   v[i+j+k] = v[v[y[i+1]]];
+func void test0() {}
 
-   ok = v;
- 
-   v[3] = cinema7d[3];
+func void test2(int p1, int p2) {}
 
-   
+func void test3() {
+	i = 10;
 }
 
+func void test4(int j, int p2, int p3, int p4) {
+	int x;
+	int y;
+	int i;
+}
+
+func int getA() { return a; }
+
+void main() {
+	a = 10;
+	struct aluno a1;
+	struct aluno a2;
+	a1.a = 4;
+	a2.a = 5;
+	tes2(1,2);
+}
 
 
 

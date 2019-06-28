@@ -36,6 +36,10 @@ public class TS_entry
    public TS_entry getTipo() {
        return tipo;
    }
+   
+   public ClasseID getClasse() {
+		return classe;
+   }
 
  public TS_entry getTipoBase() {
        return tipoBase;
@@ -46,7 +50,7 @@ public class TS_entry
     locais = a;
   }
 
-  public TabSimb getLocal() {
+  public TabSimb getLocais() {
     return locais;
   }
 
@@ -74,6 +78,9 @@ public class TS_entry
       else if (tipo==Parser.Tp_INT)    return "int";
       else if (tipo==Parser.Tp_BOOL)   return "boolean";
       else if (tipo==Parser.Tp_DOUBLE)  return "double";
+      else if (tipo==Parser.Tp_DECSTRUCT)  return "decStruct";
+      else if (tipo==Parser.Tp_STRUCT)  return "struct";
+      else if (tipo==Parser.Tp_VOID)  return "void";
       else if (tipo.getTipo() != null) return  String.format("array(%d,%s)",
                                                    tipo.nroElementos,
                                                     tipo2str(tipo.tipoBase));

@@ -184,29 +184,25 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
                else $$ = nodoLocal.getTipo();
           }
    | IDENT '(' { TS_entry nodo = aux.pesquisa($1);
-				 if(nodo == null) {
+				  if(nodo == null) {
                      yyerror("(sem) Funcao <" + $1 + "> nao declarada");
-					 $$ = Tp_ERRO;
-                 } else {
-					 pilhaEscopo.push(nodo.getLocais());
-					 pilhaPosicao.push(nodo.getLocais().contaParam());
-				 }
-			   } pexp ')' { pilhaEscopo.pop(); pilhaPosicao.pop(); }
+                     $$ = Tp_ERRO;
+                  } else { 
+					  pilhaEscopo.push(nodo.getLocais());
+					  pilhaPosicao.push(nodo.getLocais().contaParam());
+				  } 
+				} pexp ')' { pilhaEscopo.pop(); pilhaPosicao.pop(); }
 ;
 
-pexp : pexp ',' exp { if ( pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$3 ) {
+pexp : pexp ',' exp { if ( pilhaEscopo.peek().get(pilhaPosicao.peek()).getTipo() != (TS_entry)$3 ) {
 						yyerror("(sem) tipo do parametro <" + $3 + "> errado");
-					  } else if ( pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getClasse() != ClasseID.NomeParam ) {
+						
+					  } else if ( pilhaEscopo.peek().get(pilhaPosicao.peek()).getClasse() != ClasseID.NomeParam ) {
 						yyerror("(sem) parametro errado");
+						
 					  } else { pilhaPosicao.push(pilhaPosicao.pop() - 1); }
 				   } 
-	 | exp { if (pilhaPosicao.peek() != 1) {
-				yyerror("(sem) numero errado de parametros");
-			 } else if (pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$1) {
-				yyerror("(sem) tipo do parametro <" + $1 + "> errado, esperado: <"+ (TS_entry)$1 +">");
-			 }
-		   }
-	 ;
+	 | exp ;
 
 %%
 

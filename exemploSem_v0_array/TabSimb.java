@@ -31,6 +31,10 @@ public class TabSimb
       }
       return null;
     }
+    
+    public TS_entry get(Integer n) {
+		return lista.get(n);
+	}
 
     public  ArrayList<TS_entry> getLista() {return lista;}
 }
