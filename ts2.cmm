@@ -3,11 +3,11 @@ $TRACE_OFF
 int d;
 bool matricula;
 
-def struct DATA {
+decStruct DATA {
     int dia, mes, ano;
 }
 
-def struct ALUNO {
+decStruct ALUNO {
     int matricula;
     struct DATA dnasc;
     bool formado;

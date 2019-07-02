@@ -25,7 +25,6 @@ public class TabSimb
     
     public int contaParam() {
       int cont = 0;
-      System.out.println("\n\nListagem da tabela de simbolos:\n");
       for (TS_entry nodo : lista) {
           if(nodo.getClasse() == ClasseID.NomeParam) cont++;
       }

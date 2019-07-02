@@ -4,13 +4,13 @@ int i, j;
 double x,y;
 bool b, ok;
 
-void foo(int x) {
+func void foo(int x) {
     double ok;
     ok = x * 3;
     b = ok > y;
 }
 
-double boo(int a, double b) {
+func double boo(int a, double b) {
     foo(b);
     return 2;
 }

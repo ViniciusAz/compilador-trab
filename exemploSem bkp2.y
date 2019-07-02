@@ -33,10 +33,10 @@ dList : decl dList | ;
 decl : type  { currentType = (TS_entry)$1; } Lid ';'
      | DECSTRUCT { currentType = Tp_DECSTRUCT; } id '{' { escopoLocal = new TabSimb(); } dListStruct '}' ';' { TS_entry nodo = ts.pesquisa($3);
                                                                                                             nodo.insereLocais(escopoLocal); }
-	 | FUNC type id '(' { escopoLocal = new TabSimb(); } lparam ')' 
+	 | FUNC type { currentType = (TS_entry)$2; } id '(' { escopoLocal = new TabSimb(); } lparam ')' 
 		'{' { ts = escopoLocal; } corpoF 
-			RETURN exp { currentType = validaTipo(RETURN, (TS_entry)$2, (TS_entry)$12); } ';' { ts = aux; } 
-		'}' { TS_entry nodo = ts.pesquisa($3); nodo.insereLocais(escopoLocal); }
+			RETURN exp { if ((TS_entry)$13 != currentType)   yyerror("(sem) retorno do tipo errado"); } ';' { ts = aux; } 
+		'}' { TS_entry nodo = ts.pesquisa($4); nodo.insereLocais(escopoLocal); }
 	 | FUNC VOID { currentType = Tp_VOID; } id '(' { escopoLocal = new TabSimb(); } lparam ')' 
 		'{' { ts = escopoLocal; } corpoF { ts = aux; } '}' { TS_entry nodo = ts.pesquisa($4); nodo.insereLocais(escopoLocal); /*escopoLocal.listar();*/ }
                                                                                                             
@@ -116,7 +116,6 @@ cmd :  exp ';'
 
 
 exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
-| exp '*' exp { $$ = validaTipo('*', (TS_entry)$1, (TS_entry)$3); }
 | exp '>' exp { $$ = validaTipo('>', (TS_entry)$1, (TS_entry)$3); }
 | exp AND exp { $$ = validaTipo(AND, (TS_entry)$1, (TS_entry)$3); }
 | NUM         { $$ = Tp_INT; }
@@ -208,25 +207,21 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
                                   System.out.println("Tam1x " );
 			   } pexp ')' { if (pilhaPosicao.peek() != 0)
 								yyerror("(sem) numero de parametros diferente da chamada da função");
-							pilhaEscopo.pop(); pilhaPosicao.pop(); System.out.println("oe");}
+							pilhaEscopo.pop(); pilhaPosicao.pop(); }
 	;
 
 pexp : pexp ',' exp { //System.out.println("ordem posicao: " + pilhaPosicao.peek() + " , id : " + pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getId() ); 
 					  if ( pilhaEscopo.peek() != null ) {	
-					    //if ( pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$3 ) {
-						//	yyerror("(sem) tipo do parametro <" + $3 + "> errado");
-						//} 
-						{ TS_entry lixo = validaTipo(RETURN, pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo(), (TS_entry)$3); }
-						pilhaPosicao.push(pilhaPosicao.pop() - 1);
+					    if ( pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$3 ) {
+							yyerror("(sem) tipo do parametro <" + $3 + "> errado");
+						} pilhaPosicao.push(pilhaPosicao.pop() - 1);
 					  } 
 				   }
 	 | exp { if (pilhaEscopo.peek() != null) {
 				//System.out.println("ordem posicao: " + pilhaPosicao.peek() + " , id : " + pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getId() ); 
-				{ TS_entry lixo = validaTipo(RETURN, pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo(), (TS_entry)$1); }
-				 //if (pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$1) {
-				//	yyerror("(sem) tipo do parametro <" + $1 + "> errado");
-				 //} 
-				 pilhaPosicao.push(pilhaPosicao.pop() - 1); 
+				 if (pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$1) {
+					yyerror("(sem) tipo do parametro <" + $1 + "> errado");
+				 } pilhaPosicao.push(pilhaPosicao.pop() - 1); 
 			  }
 		   }
 	 ;
@@ -346,7 +341,6 @@ TS_entry validaTipo(int operador, TS_entry A, TS_entry B) {
                 break;
 
           case '+' :
-          case '*' :
                 if ( A == Tp_INT && B == Tp_INT)
                       return Tp_INT;
                 else if ( (A == Tp_DOUBLE && (B == Tp_INT || B == Tp_DOUBLE)) ||
@@ -368,16 +362,6 @@ TS_entry validaTipo(int operador, TS_entry A, TS_entry B) {
                      return Tp_BOOL;
                   else
                     yyerror("(sem) tipos incomp. para op lógica: "+ A.getTipoStr() + " && "+B.getTipoStr());
-             break;
-        case RETURN:
-                if ( (A == Tp_INT && B == Tp_INT)                        ||
-                     ((A == Tp_DOUBLE && (B == Tp_INT || B == Tp_DOUBLE))) ||
-                     (A == B) )
-                     return A;
-                 else if (A == Tp_BOOL && B == Tp_BOOL)
-                     return Tp_BOOL;
-                  else
-                    yyerror("(sem) tipos incomp. esperado: "+ A.getTipoStr() + " , recebido: "+B.getTipoStr());
              break;
         }
 
