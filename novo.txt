@@ -1,39 +1,23 @@
 int i;
-int a;
+bool a;
 bool kk;
 
 decStruct aluno {
 	int a;
 	int b;
+
 };
 
 decStruct carro {
 	bool ac, dh;
 };
 
-func void test0() {}
-
-func int test2(int p1, int p2) { return 0; }
-
-func void test3() {
-	i = 10;
-}
-
-func void test4(int j, int p2, int p3, int p4) {
-	int x, xx;
-	int y;
-	bool i;
-}
-
-func int getA() { return a; }
-
 void main() {
-	a = 10;
+
 	struct aluno a1;
-	struct aluno a2;
+	struct carro ac;
+	a = ac.ac && (a1.a>1)	;	
 	a1.a = 4;
-	a2.a = 5;
-	test4(test2(1,2), 2 , 3 , 4);
 	
 	
 }

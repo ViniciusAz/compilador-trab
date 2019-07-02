@@ -62,6 +62,9 @@ corpoF : corpoF listacmd
 
 dListStruct : dListStruct type { currentType = (TS_entry)$2; } LidL ';'
             | type { currentType = (TS_entry)$1; } LidL ';'
+            | STRUCT IDENT { TS_entry nodo = aux.pesquisa($2);
+                             if (nodo == null) yyerror("(sem) struct >" + $2 + "< nao declarada"); }
+              idL ';' 
             ;
 
 LidL : LidL  ',' idL 
@@ -167,8 +170,7 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
               if (nodo == null) {
                  yyerror("(sem) variavel <" + $1 + "> nao declarada");
                  $$ = Tp_ERRO;
-              }
-              else {
+              } else {
                   if(nodo.getTipo() != Tp_STRUCT) {
                       yyerror("(sem) variavel <" + $1 + "> nao é uma STRUCT");
                       $$ = Tp_ERRO;
@@ -188,15 +190,12 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
                } else $$ = nodoLocal.getTipo();
           }
    | IDENT '(' { TS_entry nodo = aux.pesquisa($1);	   
-                 System.out.println("Tam1 " );
 				 if(nodo == null) {
-                 System.out.println("Tam2 " );
 					 pilhaPosicao.push(0);
 					 pilhaEscopo.push(null);
                      yyerror("(sem) Funcao <" + $1 + "> nao declarada");
 					 $$ = Tp_ERRO;
                  } else /* achou funcao */ {
-					                  System.out.println("Tam1d " );
 					 if(nodo.getLocais() == null ) {
 						pilhaPosicao.push(0);
 						pilhaEscopo.push(null);
@@ -205,27 +204,26 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
 						 pilhaEscopo.push(nodo.getLocais());
 					 }
                  }
-                                  System.out.println("Tam1x " );
 			   } pexp ')' { if (pilhaPosicao.peek() != 0)
 								yyerror("(sem) numero de parametros diferente da chamada da função");
-							pilhaEscopo.pop(); pilhaPosicao.pop(); System.out.println("oe");}
+							pilhaEscopo.pop(); pilhaPosicao.pop();}
 	;
 
-pexp : pexp ',' exp { //System.out.println("ordem posicao: " + pilhaPosicao.peek() + " , id : " + pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getId() ); 
+pexp : pexp ',' exp { //System.out.println("x2"); System.out.println("ordem posicao: " + pilhaPosicao.peek() + " , id : " + pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getId() ); 
 					  if ( pilhaEscopo.peek() != null ) {	
-					    //if ( pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$3 ) {
-						//	yyerror("(sem) tipo do parametro <" + $3 + "> errado");
-						//} 
-						{ TS_entry lixo = validaTipo(RETURN, pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo(), (TS_entry)$3); }
+					    if ( pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$3 ) {
+							yyerror("(sem) tipo do parametro <" + $3 + "> errado");
+						} 
+						//{ TS_entry lixo = validaTipo(RETURN, pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo(), (TS_entry)$3); }
 						pilhaPosicao.push(pilhaPosicao.pop() - 1);
 					  } 
 				   }
 	 | exp { if (pilhaEscopo.peek() != null) {
 				//System.out.println("ordem posicao: " + pilhaPosicao.peek() + " , id : " + pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getId() ); 
-				{ TS_entry lixo = validaTipo(RETURN, pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo(), (TS_entry)$1); }
-				 //if (pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$1) {
-				//	yyerror("(sem) tipo do parametro <" + $1 + "> errado");
-				 //} 
+				//{ TS_entry lixo = validaTipo(RETURN, pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo(), (TS_entry)$1); }
+				 if (pilhaEscopo.peek().get(pilhaPosicao.peek()-1).getTipo() != (TS_entry)$1) {
+					yyerror("(sem) tipo do parametro <" + $1 + "> errado");
+				 }
 				 pilhaPosicao.push(pilhaPosicao.pop() - 1); 
 			  }
 		   }
